@@ -1,8 +1,12 @@
-# Meowdoku 🐾
+# MEOWDOKU // HeatherOS 🐾
 
 A cozy, **ad-free** cat logic puzzle — a Queens-style deduction game (think
-LinkedIn Queens crossed with Minesweeper) dressed up in cats. One
-self-contained HTML file: no install, no network, no tracking. Just cats.
+LinkedIn Queens crossed with Minesweeper) dressed in cats, and skinned to match
+the **heatherblood.com** brand: deep-purple neo-brutalism, hot-pink/yellow/cyan/
+lime color-blocks, hard black offset shadows, heavy display type over monospace,
+caution tape, a green terminal readout, and a **compliment generator**.
+
+One self-contained HTML file: no install, no network, no tracking. Just cats.
 
 ## Play
 
@@ -21,25 +25,23 @@ The board is split into colored areas. Place cats so that:
 - and **no two cats ever touch** — not side by side, and not even at a corner
   (diagonally).
 
-Every puzzle has exactly **one** solution, and it's always reachable by pure
-logic — no guessing required.
+Every puzzle has exactly **one** solution, always reachable by pure logic.
 
 ## How to play
 
-- **Tap a tile** to cycle through: empty → **✕** (ruled out) → **🐱** (cat) →
-  empty. Use ✕ like Minesweeper flags to mark the spots you've eliminated.
-- Tapping a tile highlights its row, column, and color so you can see what it
-  affects.
+- **Tap a tile** to cycle: empty → **✕** (ruled out) → **🐱** (cat) → empty.
+  Use ✕ like Minesweeper flags to mark spots you've eliminated.
+- Tapping a tile highlights its row, column, and color.
 - You have **3 hearts** ❤️ — placing a cat that breaks a rule costs one.
-  Run out and you can retry the same puzzle or grab a fresh one.
+- Hit **NEED A COMPLIMENT?** anytime for a little pick-me-up. 🌹
 
 ## Features
 
 - Four sizes: **Kitten** (6×6), **Cat** (7×7), **Alley** (8×8), **Feral** (9×9).
-- **Undo**, **Clear**, and a **Hint** that reveals one correct cat.
+- **Undo**, **Clear**, **Hint**, and a **compliment generator** in Heather's voice.
 - Guaranteed unique, logic-solvable puzzles (generated fresh every time).
 - **Auto-saves** — close the tab and pick up right where you left off.
-- Timer, a little celebration when you win, and full **light/dark** support.
+- Timer, a win celebration, and a look tuned to heatherblood.com.
 - Works completely offline.
 
-Made with love. 🐈
+Made with love for the Rose Witch. 🌹🐈
