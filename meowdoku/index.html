@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#3b0a6b">
 <meta name="color-scheme" content="dark">
-<meta name="description" content="MEOWDOKU // a HeatherOS cat-deduction unit. One cat per row, column & color — and no two cats may touch.">
-<title>MEOWDOKU // HeatherOS 🐾</title>
+<meta name="description" content="ROSEDOKU // the Rose Witch's garden. Plant one rose per row, column & bed — no two may touch, or the beetles move in.">
+<title>ROSEDOKU // HeatherOS 🌹</title>
 <style>
   :root{
     --bgA:#3b0a6b; --bgB:#280747; --ink:#0d0d0d;
@@ -15,7 +15,7 @@
     --orange:#ff7a00; --violet:#b07bff; --red:#ff3b3b; --teal:#17d9c2; --cream2:#f4efe1;
     --term:#39ff5a; --soft:#cbb7e6;
     --sh:5px 5px 0 var(--ink); --sh-lg:8px 8px 0 var(--ink); --sh-sm:3px 3px 0 var(--ink);
-    /* region palette */
+    /* garden-bed palette */
     --reg0:#ff2d9b; --reg1:#ffd400; --reg2:#00e5ff; --reg3:#a3f000; --reg4:#ff7a00;
     --reg5:#b07bff; --reg6:#ff5c5c; --reg7:#f4efe1; --reg8:#17d9c2;
     --catink:#0d0d0d; --linebold:#0d0d0d; --linethin:rgba(0,0,0,.30);
@@ -46,12 +46,12 @@
     line-height:.92;letter-spacing:-1.5px;color:#fff;text-transform:uppercase;
     text-shadow:4px 4px 0 var(--ink),5px 5px 0 var(--pink);
   }
-  h1 .paw{-webkit-text-fill-color:initial;text-shadow:none;font-size:.55em;vertical-align:.12em}
+  h1 .rose{-webkit-text-fill-color:initial;text-shadow:none;font-size:.55em;vertical-align:.12em}
   .sub{font-family:var(--serif);font-style:italic;color:var(--yellow);font-size:14px;margin-top:2px}
   .os{font-family:var(--mono);color:var(--soft);font-size:11px;letter-spacing:.5px}
   .hud{display:flex;align-items:center;gap:8px}
-  .hearts{font-size:18px;letter-spacing:2px}
-  .hearts .lost{filter:grayscale(1) opacity(.35)}
+  .health{font-size:18px;letter-spacing:2px}
+  .health .beetle{filter:saturate(1.1)}
   .term{background:var(--ink);border:2px solid var(--term);color:var(--term);
     font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:1px;
     padding:4px 9px;box-shadow:var(--sh-sm);font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -75,14 +75,14 @@
   .diffbar button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
   .diffbar button.active{background:var(--pink);color:#fff;transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
 
-  /* board */
+  /* board / garden */
   .boardwrap{align-self:center;background:var(--cream);border:3px solid var(--ink);
     padding:9px;box-shadow:var(--sh-lg)}
   .board{display:grid;border-top:3px solid var(--linebold);border-left:3px solid var(--linebold)}
   .cell{
     width:var(--cell);height:var(--cell);display:flex;align-items:center;justify-content:center;
     position:relative;cursor:pointer;user-select:none;font-size:calc(var(--cell)*.6);line-height:1;
-    color:var(--catink);
+    color:var(--catink);overflow:hidden;
   }
   .cell .ink{pointer-events:none;transform:translateZ(0)}
   .cell.hl{box-shadow:inset 0 0 0 999px rgba(0,0,0,.13)}
@@ -94,6 +94,16 @@
   @keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
   .cell.shake{animation:shake .32s}
   @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+  /* Japanese beetle crawls across the square on a wrong plant */
+  .beetle-run{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:calc(var(--cell)*.6);pointer-events:none;z-index:6}
+  .beetle-run.go{animation:crawl 1.05s ease forwards}
+  @keyframes crawl{
+    0%{transform:translateX(-130%) rotate(-16deg)}
+    22%{transform:translateX(0) rotate(9deg)} 38%{transform:translateX(0) rotate(-9deg)}
+    54%{transform:translateX(0) rotate(7deg)} 70%{transform:translateX(0) rotate(-5deg)}
+    100%{transform:translateX(135%) rotate(16deg);opacity:0}
+  }
 
   /* tools */
   .tools{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
@@ -159,7 +169,7 @@
 
   .confetti{position:fixed;top:-24px;font-size:22px;pointer-events:none;z-index:29;animation:fall linear forwards}
   @keyframes fall{to{transform:translateY(112vh) rotate(400deg);opacity:.9}}
-  @media (prefers-reduced-motion:reduce){ .card .pop,.cell .pop,.cell.shake,.confetti{animation:none} }
+  @media (prefers-reduced-motion:reduce){ .card,.cell .pop,.cell.shake,.confetti,.beetle-run.go{animation:none} }
   @media (max-width:380px){ .tools button{font-size:9px} .compBtn{font-size:11px;padding:10px 12px} }
 </style>
 </head>
@@ -168,23 +178,23 @@
   <header>
     <div class="titlerow">
       <div>
-        <h1><span class="paw">🐾</span>MEOWDOKU</h1>
-        <div class="sub">a.k.a. Cat Sudoku. Rose Witch approved.</div>
-        <div class="os">HeatherOS v40.0 // cat-deduction-unit</div>
+        <h1><span class="rose">🌹</span>ROSEDOKU</h1>
+        <div class="sub">a.k.a. the Rose Witch's garden.</div>
+        <div class="os">HeatherOS v40.0 // rose-cultivation-unit</div>
       </div>
       <div class="hud">
-        <div class="hearts" id="hearts">❤️❤️❤️</div>
+        <div class="health" id="health" title="garden health">🌹🌹🌹</div>
         <div class="term" id="timer">0:00</div>
       </div>
     </div>
-    <div class="tape" id="tape">⚠ ONE CAT PER ROW · COLUMN · COLOR — NO TWO CATS MAY TOUCH ⚠</div>
+    <div class="tape" id="tape">⚠ ONE ROSE PER ROW · COLUMN · BED — NO TWO ROSES MAY TOUCH ⚠</div>
   </header>
 
   <div class="diffbar" id="diffbar">
-    <button data-d="0">Kitten<span class="n">6×6</span></button>
-    <button data-d="1" class="active">Cat<span class="n">7×7</span></button>
-    <button data-d="2">Alley<span class="n">8×8</span></button>
-    <button data-d="3">Feral<span class="n">9×9</span></button>
+    <button data-d="0">Seedling<span class="n">6×6</span></button>
+    <button data-d="1" class="active">Sprout<span class="n">7×7</span></button>
+    <button data-d="2">Bloom<span class="n">8×8</span></button>
+    <button data-d="3">Bramble<span class="n">9×9</span></button>
   </div>
 
   <div class="boardwrap"><div class="board" id="board"></div></div>
@@ -197,7 +207,7 @@
     <button id="helpBtn"><span class="ic">📋</span>Rules</button>
   </div>
 
-  <footer>Tap once for <b>✕</b> (ruled out), again for <b>🐱</b>, again to clear. She contains multitudes — most of them are cats.</footer>
+  <footer>Tap once for <b>✕</b> (ruled out), again to plant a <b>🌹</b>, again to clear. Roses need room — no two may touch, or the beetles move in. 🪲</footer>
 </div>
 
 <button class="compBtn" id="compBtn">Need a compliment?</button>
@@ -205,29 +215,29 @@
 <!-- Rules -->
 <div class="overlay" id="rulesOv">
   <div class="card">
-    <span class="big">🐱</span>
-    <h2 class="pink">How&nbsp;to&nbsp;play</h2>
+    <span class="big">🌹</span>
+    <h2 class="pink">How&nbsp;to&nbsp;grow</h2>
     <ul class="rules">
-      <li><span class="tag" style="background:var(--lime)">🐱</span><span>Place exactly <b>one cat</b> in every <b>row</b>, every <b>column</b>, and every <b>colored area</b>.</span></li>
-      <li><span class="tag" style="background:var(--red)">🚫</span><span><b>No two cats may touch</b> — not side by side, and not even at a corner (diagonally).</span></li>
-      <li><span class="tag" style="background:var(--cyan)">✕</span><span>Tap a tile to cycle empty → <b>✕</b> (ruled out) → <b>🐱</b> → empty. Use ✕ like minesweeper flags.</span></li>
-      <li><span class="tag" style="background:var(--pink)">❤</span><span>You get <b>3 hearts</b>. Placing a cat that breaks a rule costs one.</span></li>
-      <li><span class="tag" style="background:var(--yellow)">🧠</span><span>Solve by logic, not luck. Every puzzle has <b>exactly one</b> answer.</span></li>
+      <li><span class="tag" style="background:var(--lime)">🌹</span><span>Plant exactly <b>one rose</b> in every <b>row</b>, every <b>column</b>, and every <b>garden bed</b> (color).</span></li>
+      <li><span class="tag" style="background:var(--red)">🚫</span><span>Roses need space — <b>no two may touch</b>, not side by side, not even at a corner (diagonally).</span></li>
+      <li><span class="tag" style="background:var(--cyan)">✕</span><span>Tap a tile to cycle empty → <b>✕</b> (ruled out) → <b>🌹</b> → empty. Use ✕ to mark bare dirt.</span></li>
+      <li><span class="tag" style="background:var(--orange)">🪲</span><span>Plant in the wrong spot and a <b>Japanese beetle</b> moves in. <b>Three</b> and the garden's overrun.</span></li>
+      <li><span class="tag" style="background:var(--yellow)">🧠</span><span>Grow by logic, not luck. Every garden has <b>exactly one</b> way to bloom.</span></li>
     </ul>
-    <div class="row"><button class="primary" id="rulesClose">Let's play 🐾</button></div>
+    <div class="row"><button class="primary" id="rulesClose">Start planting 🌹</button></div>
   </div>
 </div>
 
 <!-- End -->
 <div class="overlay" id="endOv">
   <div class="card">
-    <span class="stamp" id="endStamp">CASE&nbsp;SOLVED</span>
-    <span class="big" id="endCat">😻</span>
-    <h2 class="red" id="endTitle">Purrfect!</h2>
+    <span class="stamp" id="endStamp">GARDEN&nbsp;THRIVING</span>
+    <span class="big" id="endCat">🌹</span>
+    <h2 class="red" id="endTitle">In full bloom!</h2>
     <p id="endMsg"></p>
     <div class="row">
-      <button class="primary" id="endAgain">New puzzle 🐾</button>
-      <button class="ghost" id="endRetry">Retry this one</button>
+      <button class="primary" id="endAgain">New garden 🌱</button>
+      <button class="ghost" id="endRetry">Replant this one</button>
     </div>
   </div>
 </div>
@@ -250,13 +260,14 @@
 
 // ---------- config ----------
 const DIFF = [
-  {name:"Kitten", N:6},
-  {name:"Cat",    N:7},
-  {name:"Alley",  N:8},
-  {name:"Feral",  N:9},
+  {name:"Seedling", N:6},
+  {name:"Sprout",   N:7},
+  {name:"Bloom",    N:8},
+  {name:"Bramble",  N:9},
 ];
-const CAT = "🐱";
-const MAX_HEARTS = 3;
+const ROSE = "🌹";
+const BEETLE = "🪲";
+const MAX_HEALTH = 3;          // beetles it takes to overrun the garden
 const SAVE_KEY = "meowdoku.heatheros.v1";
 
 // compliments — flavored with heatherblood.com inside jokes 🌹
@@ -267,8 +278,8 @@ const COMPLIMENTS = [
   "You contain multitudes. Most of them are excellent. A few involve yarn.",
   "Your embroidery could make a stray cat believe in beauty again.",
   "68–72°F of pure, non-negotiable brilliance.",
-  "The cats would elect you mayor. Unanimously. First round.",
-  "You solve things the way you live: chaotically, cozily, correctly.",
+  "The whole garden would elect you mayor. Unanimously. First round.",
+  "You grow things the way you live: chaotically, cozily, correctly.",
   "Somewhere a ball of yarn is bragging that you touched it.",
   "You're the plot twist in a show that swore off plots.",
   "Emotionally devastating AND danceable — a rare and powerful combo.",
@@ -276,20 +287,20 @@ const COMPLIMENTS = [
   "Your presence lowers the room to exactly the acceptable temperature.",
   "Wine on the patio was invented so you'd have a throne.",
   "Softer than a cinnamon roll and twice as dangerous.",
-  "The fish are safe, the vibes are immaculate, the queen has arrived.",
+  "The beetles wouldn't dare. Not in your garden.",
   "You pester people relentlessly and they thank you for it.",
-  "Nine cats, zero doubts — you were born for this puzzle.",
+  "Nine roses, zero doubts — you were born to tend this garden.",
   "You make 'near water but not in water' sound like a whole philosophy. It is.",
   "In every heart that knows you, you're visitor #000000001.",
   "You out-cozy the coziest cat on the sunniest windowsill.",
   "Your brain is a rose garden with a very good firewall.",
   "Chaos looks up to you. Comfort takes notes.",
   "You'd win Survivor and knit everyone a sweater on the way out.",
-  "The purrs are for you. All of them. Always were.",
+  "Every bloom in this garden is showing off for you.",
   "You're the reason the yarn tangles — worth every knot.",
   "Ethical AI, unethical amounts of charm.",
   "You deserve the last cinnamon roll and the warmest patch of sun.",
-  "Every cat you meet immediately updates its will.",
+  "The thorns are just the garden's way of keeping you safe.",
   "Officially classified: dangerously delightful. Do not declassify.",
 ];
 
@@ -397,13 +408,13 @@ function newGame(diff){
   const {perm,region}=generatePuzzle(N);
   const colorMap=shuffle([...Array(9).keys()]).slice(0,N);
   S={ diff, N, perm, region, colorMap,
-      cell:new Array(N*N).fill(0), hearts:MAX_HEARTS, seconds:0, sel:-1,
+      cell:new Array(N*N).fill(0), health:MAX_HEALTH, seconds:0, sel:-1,
       won:false, dead:false, history:[] };
   startTimer(); buildBoard(); render(); save();
 }
 function retryPuzzle(){
   S.cell=new Array(S.N*S.N).fill(0);
-  S.hearts=MAX_HEARTS; S.seconds=0; S.sel=-1; S.won=false; S.dead=false; S.history=[];
+  S.health=MAX_HEALTH; S.seconds=0; S.sel=-1; S.won=false; S.dead=false; S.history=[];
   startTimer(); render(); save();
 }
 function startTimer(){
@@ -435,11 +446,11 @@ function buildBoard(){
   }
 }
 function conflictSet(){
-  const N=S.N, cats=[];
-  for(let i=0;i<N*N;i++) if(S.cell[i]===2) cats.push(i);
+  const N=S.N, roses=[];
+  for(let i=0;i<N*N;i++) if(S.cell[i]===2) roses.push(i);
   const bad=new Set();
-  for(let a=0;a<cats.length;a++)for(let b=a+1;b<cats.length;b++){
-    const i=cats[a], j=cats[b];
+  for(let a=0;a<roses.length;a++)for(let b=a+1;b<roses.length;b++){
+    const i=roses[a], j=roses[b];
     const ri=Math.floor(i/N),ci=i%N,rj=Math.floor(j/N),cj=j%N;
     if(ri===rj || ci===cj || S.region[i]===S.region[j] || (Math.abs(ri-rj)<=1 && Math.abs(ci-cj)<=1)){ bad.add(i); bad.add(j); }
   }
@@ -451,32 +462,37 @@ function render(){
   if(S.sel>=0){ selR=Math.floor(S.sel/N); selC=S.sel%N; selReg=S.region[S.sel]; }
   for(let i=0;i<N*N;i++){
     const el=cells[i], r=Math.floor(i/N), c=i%N;
+    // keep any running beetle animation node
+    const beetle=el.querySelector(".beetle-run");
     el.classList.remove("hl","sel","bad");
     if(S.sel>=0 && (r===selR||c===selC||S.region[i]===selReg)) el.classList.add("hl");
     if(i===S.sel) el.classList.add("sel");
     if(bad.has(i)) el.classList.add("bad");
     const v=S.cell[i];
-    if(v===2) el.innerHTML=`<span class="ink">${CAT}</span>`;
+    if(v===2) el.innerHTML=`<span class="ink">${ROSE}</span>`;
     else if(v===1) el.innerHTML=`<span class="ink x"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"><path d="M5 5 L19 19 M19 5 L5 19"/></svg></span>`;
     else el.innerHTML="";
+    if(beetle) el.appendChild(beetle);
   }
-  let h=""; for(let k=0;k<MAX_HEARTS;k++) h+=k<S.hearts?"❤️":`<span class="lost">🤍</span>`;
-  document.getElementById("hearts").innerHTML=h;
+  // garden health: 🌹 healthy, 🪲 beetle took it
+  let h=""; for(let k=0;k<MAX_HEALTH;k++) h+=k<S.health?"🌹":`<span class="beetle">${BEETLE}</span>`;
+  document.getElementById("health").innerHTML=h;
   updateTimer();
   document.getElementById("undoBtn").disabled=S.history.length===0;
   document.querySelectorAll(".diffbar button").forEach(b=>b.classList.toggle("active",+b.dataset.d===S.diff));
 }
 
 // ---------- interaction ----------
-function pushHistory(){ S.history.push({cell:S.cell.slice(), hearts:S.hearts}); if(S.history.length>300) S.history.shift(); }
+function pushHistory(){ S.history.push({cell:S.cell.slice(), health:S.health}); if(S.history.length>300) S.history.shift(); }
 function tap(i){
   if(S.won||S.dead) return;
   S.sel=i; pushHistory();
   const next=(S.cell[i]+1)%3;
   S.cell[i]=next;
   if(next===2 && cellConflicts(i)){
-    S.hearts=Math.max(0,S.hearts-1); shake(i);
-    if(S.hearts===0){ render(); save(); gameOver(); return; }
+    S.health=Math.max(0,S.health-1);
+    beetleAttack(i); shake(i);
+    if(S.health===0){ render(); save(); gameOver(); return; }
   }
   render(); animate(i); save(); checkWin();
 }
@@ -491,8 +507,17 @@ function cellConflicts(i){
 }
 function animate(i){ const s=boardEl.children[i].querySelector(".ink"); if(s) s.classList.add("pop"); }
 function shake(i){ const el=boardEl.children[i]; el.classList.add("shake"); setTimeout(()=>el.classList.remove("shake"),340); }
+// a Japanese beetle skitters across the wrongly-planted square
+function beetleAttack(i){
+  const el=boardEl.children[i]; if(!el) return;
+  const b=document.createElement("div");
+  b.className="beetle-run"; b.textContent=BEETLE;
+  el.appendChild(b);
+  requestAnimationFrame(()=>b.classList.add("go"));
+  setTimeout(()=>b.remove(),1100);
+}
 function clearMarks(){ if(S.won||S.dead) return; pushHistory(); S.cell=new Array(S.N*S.N).fill(0); render(); save(); }
-function undo(){ if(!S.history.length) return; const h=S.history.pop(); S.cell=h.cell; S.hearts=h.hearts; S.dead=false; render(); save(); }
+function undo(){ if(!S.history.length) return; const h=S.history.pop(); S.cell=h.cell; S.health=h.health; S.dead=false; render(); save(); }
 function hint(){
   if(S.won||S.dead) return;
   const N=S.N;
@@ -506,32 +531,37 @@ function hint(){
   }
 }
 function checkWin(){
-  const N=S.N; let cats=0;
-  for(let i=0;i<N*N;i++) if(S.cell[i]===2) cats++;
-  if(cats!==N || conflictSet().size>0) return;
+  const N=S.N; let roses=0;
+  for(let i=0;i<N*N;i++) if(S.cell[i]===2) roses++;
+  if(roses!==N || conflictSet().size>0) return;
   S.won=true; clearInterval(timerId); save(); showEnd(true);
 }
 function gameOver(){ S.dead=true; clearInterval(timerId); showEnd(false); }
 
 // ---------- end screen ----------
-const winCats=["😻","😸","🐱","😽","🐈","🎉"];
+const bloomEmoji=["🌹","🌷","🌸","💐","🏵️","🌺"];
 function showEnd(win){
-  document.getElementById("endCat").textContent = win ? winCats[rint(winCats.length)] : "🙀";
+  document.getElementById("endCat").textContent = win ? bloomEmoji[rint(bloomEmoji.length)] : "🪲";
   const t=document.getElementById("endTitle");
-  t.textContent = win ? "Purrfect!" : "Out of hearts";
-  t.className = "red";
-  document.getElementById("endStamp").textContent = win ? "CASE SOLVED" : "CLASSIFIED";
-  document.getElementById("endStamp").style.background = win ? "var(--red)" : "var(--ink)";
+  t.textContent = win ? "In full bloom!" : "Beetles won";
+  t.className = win ? "pink" : "red";
+  document.getElementById("endStamp").textContent = win ? "GARDEN THRIVING" : "INFESTED";
+  document.getElementById("endStamp").style.background = win ? "var(--lime)" : "var(--ink)";
+  document.getElementById("endStamp").style.color = win ? "var(--ink)" : "#fff";
+  const lost=MAX_HEALTH-S.health;
   document.getElementById("endMsg").innerHTML = win
-    ? `<span class="lead">${DIFF[S.diff].name} · ${S.N}×${S.N} solved in ${fmt(S.seconds)} with ${MAX_HEARTS-S.hearts} slip${MAX_HEARTS-S.hearts===1?"":"s"}.</span> 🐾`
-    : `<span class="lead">So close. The cats got the zoomies. She will not elaborate.</span>`;
+    ? `<span class="lead">${DIFF[S.diff].name} · ${S.N}×${S.N} in full bloom in ${fmt(S.seconds)}${lost?` — ${lost} beetle${lost===1?"":"s"} got in`:", not a beetle in sight"}.</span> 🌹`
+    : `<span class="lead">The Japanese beetles feasted. The garden will forgive you. She will not elaborate.</span>`;
   document.getElementById("endRetry").style.display = win ? "none" : "";
   document.getElementById("endOv").classList.add("show");
-  if(win) confetti();
+  if(win) celebrate("bloom"); else celebrate("beetles");
 }
-function confetti(){
-  const emo=["🐾","😻","💕","🌹","🐟","🧶","😸","🐈","✦"];
-  for(let n=0;n<32;n++){
+function celebrate(kind){
+  const emo = kind==="bloom"
+    ? ["🌹","🌸","🍃","🦋","🐝","🌷","💐","✦"]
+    : ["🪲","🪲","🪲","🍂","🐛"];
+  const count = kind==="bloom" ? 32 : 22;
+  for(let n=0;n<count;n++){
     const e=document.createElement("div");
     e.className="confetti"; e.textContent=emo[n%emo.length];
     e.style.left=Math.random()*100+"vw";
@@ -556,13 +586,14 @@ function save(){
   if(!S) return;
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify({
     diff:S.diff,N:S.N,perm:S.perm,region:S.region,colorMap:S.colorMap,
-    cell:S.cell,hearts:S.hearts,seconds:S.seconds,won:S.won,dead:S.dead
+    cell:S.cell,health:S.health,seconds:S.seconds,won:S.won,dead:S.dead
   })); }catch(e){}
 }
 function load(){
   try{
     const d=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");
     if(!d||!d.region||d.region.length!==d.N*d.N) return false;
+    if(typeof d.health!=="number") d.health = (typeof d.hearts==="number"?d.hearts:MAX_HEALTH); // migrate old saves
     S={...d, sel:-1, history:[]};
     startTimer(); buildBoard(); render();
     if(S.won) showEnd(true);
