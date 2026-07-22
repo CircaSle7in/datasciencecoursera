@@ -64,4 +64,10 @@ branching with a node budget — which also guarantees every garden is solvable 
 pure logic. This scales generation cleanly to 14×14 (median ~100ms, worst <1s),
 up from a 9×9 ceiling.
 
+**Puzzle bank:** the higher levels (10×10–14×14) also ship a bank of ~90
+pre-generated, uniqueness-verified gardens (compactly hex-encoded, ~15KB). Those
+levels are served instantly from the bank and recycled, so the big boards never
+wait on generation and stay reliable even where a background worker isn't
+available. Smaller levels (6×6–9×9) are generated fresh every time.
+
 Made with love for the Rose Witch. 🌹🐝
