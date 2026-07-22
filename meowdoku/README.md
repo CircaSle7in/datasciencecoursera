@@ -15,38 +15,53 @@ the `meowdoku/` name.)_
 ## Play
 
 Open `meowdoku/index.html` in any browser (phone, tablet, or laptop).
-
-**On a phone:** open the file (or the hosted page) and tap the browser's
-*"Add to Home Screen"* — it launches full-screen like a real app.
+**On a phone:** open it and tap the browser's *"Add to Home Screen"* — it
+launches full-screen like a real app.
 
 ## The rules
 
-The garden is split into colored **beds**. Plant roses so that:
+Each garden is split into colored **beds**. Plant roses so that:
 
-- **one rose in every row**,
-- **one rose in every column**, and
-- **one rose in every colored bed**,
-- and **no two roses ever touch** — roses need room, not side by side and not
-  even at a corner (diagonally).
+- **one rose in every row**, **every column**, and **every colored bed**,
+- and **no two roses ever touch** — not side by side, not even at a corner
+  (diagonally).
 
-Every garden has exactly **one** way to bloom, always reachable by pure logic.
+Every garden has exactly **one** solution, always reachable by pure logic.
 
 ## How to play
 
 - **Tap a tile** to cycle: empty → **✕** (bare dirt, ruled out) → **🌹** (rose) →
-  empty. Use ✕ like Minesweeper flags to mark where a rose can't go.
-- Tapping a tile highlights its row, column, and bed.
+  empty. Use ✕ like Minesweeper flags to mark spots you've eliminated.
 - **Plant in the wrong spot and a 🪲 Japanese beetle moves in.** Three beetles
-  and the garden's overrun — but you can replant it or start a fresh one.
+  and the garden's overrun — replant it or start fresh.
 - Hit **NEED A COMPLIMENT?** anytime for a pick-me-up. 🌹
 
 ## Features
 
-- Four sizes: **Seedling** (6×6), **Sprout** (7×7), **Bloom** (8×8), **Bramble** (9×9).
+- **9 levels** that grow from **6×6 (Windowbox)** to **14×14 (Rose Witch)**,
+  with a scrollable ladder, per-level best times, and "Next level" progression.
+- **Garden Almanac** — persistent stats: gardens bloomed, win rate, current &
+  best streak, roses planted, beetles suffered, and per-level records.
 - **Undo**, **Clear**, **Hint**, and a **compliment generator** in Heather's voice.
-- Guaranteed unique, logic-solvable gardens (generated fresh every time).
-- **Auto-saves** — close the tab and pick up right where you left off.
-- Timer, a bloom celebration, and a look tuned to heatherblood.com.
-- Works completely offline.
+- **Easter eggs** hidden throughout (🥚 6 to find). Keep your eyes open.
+- Guaranteed unique, logic-solvable gardens, generated fresh in a background
+  worker so even the big boards never freeze.
+- **Auto-saves**, works fully offline.
+
+### About the generator (the math)
+
+Each garden must have exactly one solution. The generator:
+
+1. builds a random valid rose layout (one per row/column, none touching),
+2. floods random colored beds outward from each rose,
+3. **carves for uniqueness** — repeatedly finds alternate solutions and nudges a
+   boundary cell into a neighbor bed to kill them (never touching a rose cell, so
+   the intended solution always survives),
+4. **bails and regrows** if a garden won't converge in ~40 passes.
+
+The uniqueness solver uses **unit propagation + MRV** (minimum-remaining-values)
+branching with a node budget — which also guarantees every garden is solvable by
+pure logic. This scales generation cleanly to 14×14 (median ~100ms, worst <1s),
+up from a 9×9 ceiling.
 
 Made with love for the Rose Witch. 🌹🐝
